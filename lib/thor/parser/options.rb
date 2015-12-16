@@ -1,6 +1,7 @@
 class Thor
   class Options < Arguments #:nodoc: # rubocop:disable ClassLength
     LONG_RE     = /^(--\w+(?:-\w+)*)$/
+    MIDDLE_RE   = /^(-\w+(?:-\w+)*)$/
     SHORT_RE    = /^(-[a-z])$/i
     EQ_RE       = /^(--\w+(?:-\w+)*|-[a-z])=(.*)$/i
     SHORT_SQ_RE = /^-([a-z]{2,})$/i # Allow either -x -v or -xv style for single char args
@@ -80,6 +81,8 @@ class Thor
 
           if is_switch
             case shifted
+            when MIDDLE_RE
+              switch = $1
             when SHORT_SQ_RE
               unshift($1.split("").map { |f| "-#{f}" })
               next
@@ -141,7 +144,7 @@ class Thor
 
     def current_is_switch_formatted?
       case peek
-      when LONG_RE, SHORT_RE, EQ_RE, SHORT_NUM, SHORT_SQ_RE
+      when LONG_RE, SHORT_RE, EQ_RE, SHORT_NUM, SHORT_SQ_RE, MIDDLE_RE
         true
       else
         false
